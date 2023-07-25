@@ -90,7 +90,7 @@ Topic.belongsTo(User);
 User.hasMany(Topic);
 Topic.belongsTo(Course);
 Course.hasMany(Topic);
-File.belongsTo(Topic); // Optional
+File.belongsTo(Topic);
 Topic.hasMany(File);
 
 // SEEDING DATA
@@ -145,4 +145,10 @@ const syncAndSeed = async () => {
 
 module.exports = {
   syncAndSeed,
+  models: {
+    User,
+    Course,
+    Topic,
+    File,
+  },
 };

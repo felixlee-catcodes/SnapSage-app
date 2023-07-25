@@ -40,6 +40,7 @@ const Topic = conn.define('topic', {
   id: {
     type: UUID,
     primaryKey: true,
+    defaultValue: UUIDV4,
   },
   courseId: {
     type: UUID,
@@ -47,6 +48,10 @@ const Topic = conn.define('topic', {
   },
   userId: {
     type: UUID,
+    allowNull: false,
+  },
+  name: {
+    type: STRING,
     allowNull: false,
   },
 });
@@ -65,8 +70,8 @@ const File = conn.define('file', {
     type: UUID,
     allowNull: false,
   },
-  topic: {
-    type: STRING,
+  topicId: {
+    type: UUID,
     allowNull: true,
   },
   description: {
@@ -81,8 +86,12 @@ const File = conn.define('file', {
 // ASSOCIATIONS
 Course.belongsTo(User);
 User.hasMany(Course);
-File.belongsTo(Course);
-Course.hasMany(File);
+Topic.belongsTo(User);
+User.hasMany(Topic);
+Topic.belongsTo(Course);
+Course.hasMany(Topic);
+File.belongsTo(Topic); // Optional
+Topic.hasMany(File);
 
 // SEEDING DATA
 const syncAndSeed = async () => {
@@ -97,6 +106,14 @@ const syncAndSeed = async () => {
     Course.create({ name: 'FSA bootcamp', userId: felix.id }),
   ]);
 
+  const [dsa] = await Promise.all([
+    Topic.create({
+      userId: felix.id,
+      courseId: bootcamp.id,
+      name: 'Data Structures & Algorithms',
+    }),
+  ]);
+
   // file(s)
   const [calc, soup, hasCoworker] = await Promise.all([
     File.create({
@@ -107,17 +124,16 @@ const syncAndSeed = async () => {
     File.create({
       userId: felix.id,
       courseId: bootcamp.id,
+      topicId: dsa.id,
       mediaUrl: 'static/img/Soup Solution 1st Checkpoint.png',
       description:
         "some algorithm I don't remember, hence why I need this app!",
-      topic: 'Data Structures & Algorithms',
     }),
     File.create({
       userId: felix.id,
       courseId: bootcamp.id,
       mediaUrl: 'static/img/hasCoworker.png',
       description: 'working w/ objects',
-      topic: 'Data Structures: Objects',
     }),
   ]);
 

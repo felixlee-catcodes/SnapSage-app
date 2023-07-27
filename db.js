@@ -130,11 +130,16 @@ const syncAndSeed = async () => {
     Course.create({ name: 'FSA bootcamp', userId: felix.id }),
   ]);
 
-  const [dsa] = await Promise.all([
+  const [dsa, express] = await Promise.all([
     Topic.create({
       userId: felix.id,
       courseId: bootcamp.id,
       name: 'Data Structures & Algorithms',
+    }),
+    Topic.create({
+      userId: felix.id,
+      courseId: bootcamp.id,
+      name: 'Express Routes',
     }),
   ]);
 

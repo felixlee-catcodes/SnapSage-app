@@ -5,10 +5,14 @@ const {
 } = require('./db');
 const express = require('express');
 const path = require('path');
+const morgan = require('morgan');
 
 const app = express();
+app.use(morgan('dev'));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'static')));
 
+// get a user
 app.get('/api/:username', async (req, res, next) => {
   try {
     const user = await User.findOne({
@@ -20,7 +24,77 @@ app.get('/api/:username', async (req, res, next) => {
     next(ex);
   }
 });
-app.get('/', async (req, res, next) => {
+
+// create new user
+app.post('/api/register', async (req, res, next) => {
+  try {
+    const { username, password, email } = req.body;
+    const user = await User.create({ username, password, email });
+    res.json(user);
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+// create a new course
+app.post('/api/:username', async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    const user = await User.findOne({
+      where: { username: req.params.username },
+    });
+    const userId = user.id;
+    const course = await Course.create({ userId, name });
+    res.status(200).send(course);
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+// get all course topics
+app.get('/api/:username/:courseName', async (req, res, next) => {
+  try {
+    const { username, courseName } = req.params;
+    const user = await User.findOne({
+      where: { username },
+    });
+    const course = await Course.findOne({
+      where: { name: courseName },
+    });
+    const courseId = course.id;
+    const topics = await Topic.findAll({
+      where: { courseId },
+    });
+    res.json(topics);
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+// create a new topic
+app.post('/api/:username/:course', async (req, res, next) => {
+  try {
+    const { topicName } = req.body;
+
+    const user = await User.findOne({
+      where: { username: req.params.username },
+    });
+    const course = await Course.findOne({
+      where: { name: req.params.course },
+    });
+
+    const userId = user.id;
+    const courseId = course.id;
+
+    const topic = await Topic.create({ userId, courseId, topicName });
+    res.status(200).send(topic);
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+// i'll eventually want to protect this route, restict it to admin only
+app.get('/api', async (req, res, next) => {
   try {
     const [users, courses, topics, files] = await Promise.all([
       User.findAll(),
@@ -37,7 +111,7 @@ app.get('/', async (req, res, next) => {
         ],
       }),
     ]);
-    res.send();
+    res.send(users);
   } catch (ex) {
     next(ex);
   }

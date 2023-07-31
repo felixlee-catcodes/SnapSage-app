@@ -3,7 +3,11 @@ const { TEXT, STRING, UUID, UUIDV4 } = Sequelize;
 
 // connecting to postgres db
 const conn = new Sequelize(
-  process.env.DATABASE_URL || 'postgres://localhost/snap_sage_db'
+  process.env.DATABASE_URL || 'postgres://localhost/snap_sage_db',
+  {
+    // Set the logging option to false to turn off logging
+    logging: false,
+  }
 );
 
 // MODELS
@@ -129,7 +133,7 @@ const syncAndSeed = async () => {
   const [bootcamp] = await Promise.all([
     Course.create({ name: 'FSA bootcamp', userId: felix.id }),
   ]);
-
+  // topic(s)
   const [dsa, express] = await Promise.all([
     Topic.create({
       userId: felix.id,

@@ -8,11 +8,12 @@ const path = require('path');
 const morgan = require('morgan');
 
 const app = express();
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'static')));
 
-// get a user
+// get a user and their courses
 app.get('/api/:username', async (req, res, next) => {
   try {
     const user = await User.findOne({
@@ -51,6 +52,50 @@ app.post('/api/:username', async (req, res, next) => {
   }
 });
 
+//get all of a user's files
+app.get('/api/:username/files', async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const user = await User.findOne({
+      where: { username },
+    });
+    const userId = user.id;
+
+    const files = await File.findAll({
+      where: { userId },
+      include: [{ model: Course, attributes: ['name'] }],
+    });
+    res.send(files);
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+// add a new file
+app.post('/api/:username/file', async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const { courseId, topicId, mediaUrl, description } = req.body;
+
+    const user = await User.findOne({
+      where: { username },
+    });
+    console.log(req.body);
+    const userId = user.id;
+
+    const file = await File.create({
+      userId,
+      courseId,
+      mediaUrl,
+      description,
+    });
+    console.log('file:', file);
+    res.json(file);
+  } catch (ex) {
+    next(ex);
+  }
+});
+
 // get all course topics
 app.get('/api/:username/:courseName', async (req, res, next) => {
   try {
@@ -61,6 +106,7 @@ app.get('/api/:username/:courseName', async (req, res, next) => {
     const course = await Course.findOne({
       where: { name: courseName },
     });
+    console.log(course);
     const courseId = course.id;
     const topics = await Topic.findAll({
       where: { courseId },
@@ -86,7 +132,11 @@ app.post('/api/:username/:course', async (req, res, next) => {
     const userId = user.id;
     const courseId = course.id;
 
-    const topic = await Topic.create({ userId, courseId, topicName });
+    const topic = await Topic.create({
+      userId,
+      courseId,
+      name: topicName,
+    });
     res.status(200).send(topic);
   } catch (ex) {
     next(ex);

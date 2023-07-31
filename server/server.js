@@ -11,8 +11,12 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(express.json());
-app.use('/dist', express.static(path.join(__dirname, 'dist')));
-app.use('/static', express.static(path.join(__dirname, 'static')));
+app.use('/dist', express.static(path.join(__dirname, '../dist')));
+app.use('/static', express.static(path.join(__dirname, '../static')));
+
+app.get('/', (req, res) =>
+  res.sendFile(path.join(__dirname, '../static/index.html'))
+);
 
 // get a user and their courses
 app.get('/api/:username', async (req, res, next) => {

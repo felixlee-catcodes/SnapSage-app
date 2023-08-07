@@ -172,7 +172,7 @@ const syncAndSeed = async () => {
 
   // console.log('user: ', felix.get());
   // console.log('course: ', bootcamp.get());
-  console.log('file1: ', soup.get());
+  //console.log('file1: ', soup.get());
   // console.log('file2: ', hasCoworker.get());
 };
 

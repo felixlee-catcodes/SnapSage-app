@@ -130,8 +130,10 @@ const syncAndSeed = async () => {
   );
 
   // course(s)
-  const [bootcamp] = await Promise.all([
+  const [bootcamp, pixelArt, gameDesign] = await Promise.all([
     Course.create({ name: 'FSA bootcamp', userId: felix.id }),
+    Course.create({ name: 'Pixel Art', userId: felix.id }),
+    Course.create({ name: 'JS Game Design', userId: felix.id }),
   ]);
   // topic(s)
   const [dsa, express] = await Promise.all([

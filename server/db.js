@@ -150,27 +150,46 @@ const syncAndSeed = async () => {
   ]);
 
   // file(s)
-  const [calc, soup, hasCoworker] = await Promise.all([
-    File.create({
-      userId: felix.id,
-      courseId: bootcamp.id,
-      mediaUrl: '/img/CreateCalculator.png',
-    }),
-    File.create({
-      userId: felix.id,
-      courseId: bootcamp.id,
-      topicId: dsa.id,
-      mediaUrl: '/img/soupSolution.png',
-      description:
-        "some algorithm I don't remember, hence why I need this app!",
-    }),
-    File.create({
-      userId: felix.id,
-      courseId: bootcamp.id,
-      mediaUrl: '/img/hasCoworker.png',
-      description: 'working w/ objects',
-    }),
-  ]);
+  const [calc, soup, hasCoworker, pixelGems, pixelTiles, pixelH20Textures] =
+    await Promise.all([
+      File.create({
+        userId: felix.id,
+        courseId: bootcamp.id,
+        mediaUrl: '/static/img/CreateCalculator.png',
+      }),
+      File.create({
+        userId: felix.id,
+        courseId: bootcamp.id,
+        topicId: dsa.id,
+        mediaUrl: '/static/img/soupSolution.png',
+        description:
+          "some algorithm I don't remember, hence why I need this app!",
+      }),
+      File.create({
+        userId: felix.id,
+        courseId: bootcamp.id,
+        mediaUrl: '/static/img/hasCoworker.png',
+        description: 'working w/ objects',
+      }),
+      File.create({
+        userId: felix.id,
+        courseId: pixelArt.id,
+        mediaUrl: '/static/img/drakthug-pixel-gems.png',
+        description: 'pixel art gems',
+      }),
+      File.create({
+        userId: felix.id,
+        courseId: pixelArt.id,
+        mediaUrl: '/static/img/make-a-pixel-art-tile-pack-for-you.jpg',
+        description: 'pixel art tile',
+      }),
+      File.create({
+        userId: felix.id,
+        courseId: pixelArt.id,
+        mediaUrl: '/static/img/pixel_water_textures.png',
+        description: 'pixel art water textures',
+      }),
+    ]);
 
   // console.log('user: ', felix.get());
   // console.log('course: ', bootcamp.get());

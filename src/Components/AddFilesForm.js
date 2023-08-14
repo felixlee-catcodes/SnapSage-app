@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Modal from '@mui/material/Modal';
 
 const AddFilesForm = ({ courseId, username }) => {
   const [mediaUrls, setMedialUrls] = useState([]);
   const [input, setInput] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  //const [newRecords, setNewRecords] = useState([]);
 
   useEffect(() => {
     if (input) {
@@ -16,7 +19,7 @@ const AddFilesForm = ({ courseId, username }) => {
           const reader = new FileReader();
           reader.readAsDataURL(file);
           reader.addEventListener('load', () => {
-            newMediaUrls.push(reader.result);
+            newMediaUrls.push({ mediaUrl: reader.result, description: '' });
             setMedialUrls(newMediaUrls);
           });
         }
@@ -26,15 +29,28 @@ const AddFilesForm = ({ courseId, username }) => {
 
   const submit = async (ev) => {
     ev.preventDefault();
-    for (const mediaUrl of mediaUrls) {
-      await axios.post(`/api/${username}/file`, { mediaUrl, courseId });
+    for (const record of mediaUrls) {
+      console.log(record);
+      const { mediaUrl, description } = record;
+      await axios.post(`/api/${username}/file`, {
+        mediaUrl,
+        description,
+        courseId,
+      });
     }
     setMedialUrls([]);
+    setModalOpen(false);
   };
+
+  console.log(mediaUrls);
 
   return (
     <>
-      <form onSubmit={submit} action="post">
+      <form
+        onSubmit={() => {
+          setModalOpen(true);
+        }}
+      >
         <input
           type="file"
           accept="image/*, application/pdf"
@@ -45,22 +61,45 @@ const AddFilesForm = ({ courseId, username }) => {
         />
         <button>Add Files</button>
       </form>
-      <div id="img-preview">
-        {mediaUrls &&
-          mediaUrls.map((url, idx) => {
-            <img
-              src={url}
-              alt={idx}
-              key={idx}
-              style={{
-                maxHeight: 150,
-                maxWidth: 'auto',
-                alignSelf: 'center',
-                marginBottom: '20',
-              }}
-            />;
-          })}
-      </div>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div style={{ padding: '20px', backgroundColor: 'whitesmoke' }}>
+          <h1>Testing Modal</h1>
+          <form onSubmit={submit} action="post">
+            {mediaUrls.map((record, idx) => (
+              <div key={idx}>
+                <img src={record.mediaUrl} alt={idx} />
+                <label htmlFor="description">Description:</label>
+                <input
+                  type="text"
+                  placeholder="description here"
+                  value={record.description}
+                  onChange={(ev) => {
+                    const newMediaUrls = [...mediaUrls];
+                    newMediaUrls[idx].description = ev.target.value;
+                    setMedialUrls(newMediaUrls);
+                  }}
+                />
+              </div>
+            ))}
+            <button>Save & Upload</button>
+          </form>
+        </div>
+      </Modal>
+      {/* <div id="img-preview">
+        {mediaUrls.map((url, idx) => (
+          <img
+            src={url}
+            alt={idx}
+            key={idx}
+            style={{
+              maxHeight: 150,
+              maxWidth: 'auto',
+              alignSelf: 'center',
+              marginBottom: '20',
+            }}
+          />
+        ))}
+      </div> */}
     </>
   );
 };

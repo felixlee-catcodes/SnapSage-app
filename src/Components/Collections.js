@@ -29,7 +29,11 @@ const Collections = () => {
               key={collection.id}
               href={`#/user/${username}/collections/${collection.name}`}
             >
-              <li>{collection.name}</li>
+              <li>
+                {collection.name}
+                <br />
+                {collection.id}
+              </li>
             </a>
           ))}
         </ul>

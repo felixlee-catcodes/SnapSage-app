@@ -6,7 +6,6 @@ const AddFilesForm = ({ courseId, username }) => {
   const [mediaUrls, setMedialUrls] = useState([]);
   const [input, setInput] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  //const [newRecords, setNewRecords] = useState([]);
 
   useEffect(() => {
     if (input) {
@@ -30,19 +29,21 @@ const AddFilesForm = ({ courseId, username }) => {
   const submit = async (ev) => {
     ev.preventDefault();
     for (const record of mediaUrls) {
-      console.log(record);
       const { mediaUrl, description } = record;
-      await axios.post(`/api/${username}/file`, {
-        mediaUrl,
-        description,
-        courseId,
-      });
+      try {
+        await axios.post(`/api/${username}/file`, {
+          mediaUrl,
+          description,
+          courseId,
+        });
+      } catch (ex) {
+        console.log(ex.response);
+      }
     }
     setMedialUrls([]);
-    setModalOpen(false);
+    // setModalOpen(false);
+    // setInput(null);
   };
-
-  console.log(mediaUrls);
 
   return (
     <>

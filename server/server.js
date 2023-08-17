@@ -24,6 +24,7 @@ app.get('/api/:username', async (req, res, next) => {
     const user = await User.findOne({
       where: { username: req.params.username },
       include: [{ model: Course }],
+      order: [['createdAt', 'DESC']],
     });
     res.send(user);
   } catch (ex) {
@@ -68,7 +69,7 @@ app.get('/api/:username/files', async (req, res, next) => {
 
     const files = await File.findAll({
       where: { userId },
-      include: [{ model: Course, attributes: ['name'] }],
+      include: [{ model: Course, attributes: ['name', 'id'] }],
     });
     res.send(files);
   } catch (ex) {

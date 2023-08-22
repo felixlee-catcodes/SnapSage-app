@@ -18,15 +18,18 @@ app.get('/', (req, res) =>
   res.sendFile(path.join(__dirname, '../static/index.html'))
 );
 
-// get a user and their courses
+// get a user's list of collections/courses
 app.get('/api/:username', async (req, res, next) => {
   try {
     const user = await User.findOne({
       where: { username: req.params.username },
-      include: [{ model: Course }],
+    });
+    const courses = await Course.findAll({
+      where: { userId: user.id },
       order: [['createdAt', 'DESC']],
     });
-    res.send(user);
+    console.log(user.id);
+    res.send({ courses, user });
   } catch (ex) {
     next(ex);
   }
@@ -47,11 +50,10 @@ app.post('/api/register', async (req, res, next) => {
 app.post('/api/:username', async (req, res, next) => {
   try {
     const { name } = req.body;
-    const user = await User.findOne({
+    const { id } = await User.findOne({
       where: { username: req.params.username },
     });
-    const userId = user.id;
-    const course = await Course.create({ userId, name });
+    const course = await Course.create({ userId: id, name });
     res.status(200).send(course);
   } catch (ex) {
     next(ex);
@@ -103,7 +105,7 @@ app.post('/api/:username/file', async (req, res, next) => {
 });
 
 // get all course topics
-app.get('/api/:username/:courseName', async (req, res, next) => {
+app.get('/api/:username/:courseName/topics', async (req, res, next) => {
   try {
     const { username, courseName } = req.params;
     const user = await User.findOne({

@@ -1,23 +1,29 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { createCollection } from '../store';
 
-const CreateCollectionForm = ({ userId, username }) => {
+const CreateCollectionForm = ({ userId, username, triggerRefresh }) => {
   //eventually i'll get the userId from the auth object
-  //   const [userId, setUserId] = useState('');
   const [courseName, setCourseName] = useState('');
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  console.log('username: ', username);
   const submit = async (ev) => {
     ev.preventDefault();
-    try {
-      const request = await axios.post(`/api/${username}`, {
-        name: courseName,
-        userId,
-      });
-    } catch (ex) {
-      console.log(ex);
+    if (courseName.length) {
+      const collection = { name: courseName, userId };
+      try {
+        await dispatch(createCollection(collection, username));
+        triggerRefresh();
+      } catch (ex) {
+        console.log(ex);
+      }
+
+      setCourseName('');
+      ev.target.value = '';
     }
-    setCourseName('');
+
     // navigate(`/user/${username}/collections/${courseName}`);
   };
   const onChange = (ev) => {
@@ -30,7 +36,12 @@ const CreateCollectionForm = ({ userId, username }) => {
         <form onSubmit={submit}>
           <div className="field">
             <label htmlFor="">Course Name:</label>
-            <input type="text" onChange={onChange} maxLength={30} />
+            <input
+              type="text"
+              value={courseName}
+              onChange={onChange}
+              maxLength={30}
+            />
           </div>
           <button onClick={submit}>Create</button>
         </form>

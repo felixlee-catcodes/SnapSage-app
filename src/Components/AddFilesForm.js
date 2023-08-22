@@ -41,8 +41,8 @@ const AddFilesForm = ({ courseId, username }) => {
       }
     }
     setMedialUrls([]);
-    // setModalOpen(false);
-    // setInput(null);
+    setModalOpen(false);
+    setInput(null);
   };
 
   return (
@@ -60,7 +60,9 @@ const AddFilesForm = ({ courseId, username }) => {
           }}
           multiple
         />
-        <button>Add Files</button>
+        <button type="button" onClick={() => setModalOpen(true)}>
+          Add Files
+        </button>
       </form>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div style={{ padding: '20px', backgroundColor: 'whitesmoke' }}>
